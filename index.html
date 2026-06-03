@@ -1,0 +1,2078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- ═══ SEO & GOOGLE DISCOVERY ═══ -->
+  <meta name="description" content="RouteDesk — Find the nearest licensed real estate agents to any address in the US. Powered by live driving distance data and intelligent service area matching."/>
+  <meta name="keywords" content="real estate agent finder, nearest realtor, real estate distance tool, find realtor by zip code, real estate search, property agent locator USA"/>
+  <meta name="author" content="RouteDesk"/>
+  <meta name="robots" content="index, follow"/>
+  <meta name="googlebot" content="index, follow"/>
+  <link rel="canonical" href="https://routedesk.dpdns.org/"/>
+
+  <!-- ═══ OPEN GRAPH (shows preview on Google, Facebook, WhatsApp) ═══ -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="RouteDesk — Real Estate Distance Platform"/>
+  <meta property="og:description" content="Find the nearest licensed realtors to any US address. Enter a ZIP, city, or address and get driving distances instantly."/>
+  <meta property="og:url" content="https://routedesk.dpdns.org/"/>
+  <meta property="og:site_name" content="RouteDesk"/>
+  <meta property="og:image" content="https://routedesk.dpdns.org/og-image.png"/>
+
+  <!-- ═══ TWITTER CARD ═══ -->
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="RouteDesk — Real Estate Distance Platform"/>
+  <meta name="twitter:description" content="Find the nearest licensed realtors to any US address instantly."/>
+  <meta name="twitter:image" content="https://routedesk.dpdns.org/og-image.png"/>
+
+  <!-- ═══ STRUCTURED DATA (Google Rich Results) ═══ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "RouteDesk",
+    "description": "Real estate agent distance search platform. Find the nearest licensed realtors to any US address using live driving data.",
+    "url": "https://routedesk.dpdns.org/",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web Browser",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "creator": {
+      "@type": "Organization",
+      "name": "RouteDesk"
+    }
+  }
+  </script>
+
+<title>RouteDesk — Real Estate Distance Platform</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%23E8500A'/><circle cx='32' cy='26' r='10' fill='white'/><circle cx='32' cy='26' r='5' fill='%23E8500A'/><path d='M32 36 C22 48 16 54 32 58 C48 54 42 48 32 36Z' fill='white'/></svg>"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src='https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css' rel='stylesheet'/>
+<style>
+:root {
+  --bg: #F5F4F0;
+  --surface: #FFFFFF;
+  --surface2: #F0EFE9;
+  --border: #E2DDD5;
+  --accent: #E8500A;
+  --accent2: #1B3A6B;
+  --text: #1A1A1A;
+  --text2: #5A5650;
+  --text3: #9A9590;
+  --green: #1A7A4A;
+  --red: #C0392B;
+  --amber: #D4820A;
+  --shadow: 0 2px 8px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.06);
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+h1,h2,h3,h4 { font-family: 'Syne', sans-serif; }
+
+/* ─── AUTH SCREEN ─── */
+#auth-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+}
+.auth-left {
+  width: 48%;
+  background: var(--accent2);
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+.auth-left::before {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(232,80,10,.3) 0%, transparent 70%);
+  top: -100px; right: -100px;
+  border-radius: 50%;
+}
+.auth-left::after {
+  content: '';
+  position: absolute;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(232,80,10,.2) 0%, transparent 70%);
+  bottom: -50px; left: -50px;
+  border-radius: 50%;
+}
+.auth-brand { position: relative; z-index: 1; }
+.auth-brand-logo {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 48px;
+}
+.auth-brand-icon {
+  width: 48px; height: 48px;
+  background: var(--accent);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+}
+.auth-brand-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 24px; font-weight: 800;
+  color: white; letter-spacing: -0.5px;
+}
+.auth-brand-name span { color: var(--accent); }
+.auth-tagline {
+  font-size: 38px; font-weight: 700;
+  color: white; line-height: 1.2;
+  margin-bottom: 24px;
+  font-family: 'Syne', sans-serif;
+}
+.auth-tagline span { color: var(--accent); }
+.auth-desc { color: rgba(255,255,255,.6); font-size: 15px; line-height: 1.7; max-width: 340px; }
+.auth-stats {
+  display: flex; gap: 32px; position: relative; z-index: 1;
+}
+.auth-stat-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px; font-weight: 800; color: white;
+}
+.auth-stat-label { font-size: 12px; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: 1px; }
+.auth-right {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center;
+  padding: 60px 80px;
+  background: var(--bg);
+}
+.auth-form-wrap { width: 100%; max-width: 380px; }
+.auth-title { font-size: 28px; font-weight: 800; margin-bottom: 6px; }
+.auth-subtitle { color: var(--text2); font-size: 14px; margin-bottom: 32px; }
+.form-group { margin-bottom: 18px; }
+.form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+.form-input {
+  width: 100%; padding: 12px 16px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; color: var(--text);
+  transition: border-color .2s;
+  outline: none;
+}
+.form-input:focus { border-color: var(--accent); }
+.form-input.error { border-color: var(--red); }
+.form-error { font-size: 12px; color: var(--red); margin-top: 4px; display: none; }
+.btn-primary {
+  width: 100%; padding: 14px;
+  background: var(--accent);
+  color: white; border: none;
+  border-radius: 10px; font-family: 'Syne', sans-serif;
+  font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: background .2s, transform .1s;
+  letter-spacing: 0.3px;
+}
+.btn-primary:hover { background: #D04008; }
+.btn-primary:active { transform: scale(.99); }
+.auth-switch { text-align: center; margin-top: 24px; font-size: 13px; color: var(--text2); }
+.auth-switch a { color: var(--accent); font-weight: 600; cursor: pointer; text-decoration: none; }
+.auth-msg {
+  padding: 12px 16px; border-radius: 8px;
+  font-size: 13px; margin-bottom: 16px;
+  display: none;
+}
+.auth-msg.error { background: #FEF2F2; color: var(--red); border: 1px solid #FCA5A5; display: block; }
+.auth-msg.success { background: #F0FDF4; color: var(--green); border: 1px solid #86EFAC; display: block; }
+.auth-msg.info { background: #EFF6FF; color: var(--accent2); border: 1px solid #93C5FD; display: block; }
+
+/* ─── MAIN APP ─── */
+#app-screen { display: none; min-height: 100vh; flex-direction: column; }
+
+/* Header */
+.header {
+  height: 60px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 24px;
+  gap: 16px;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: var(--shadow);
+}
+.header-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: 18px; color: var(--accent2);
+}
+.header-logo-icon {
+  width: 34px; height: 34px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+}
+.header-logo span { color: var(--accent); }
+.header-nav { display: flex; gap: 4px; margin-left: 24px; }
+.nav-btn {
+  padding: 7px 16px;
+  border: none; background: transparent;
+  border-radius: 8px; font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 500; color: var(--text2);
+  cursor: pointer; transition: all .2s;
+}
+.nav-btn:hover { background: var(--surface2); color: var(--text); }
+.nav-btn.active { background: var(--accent); color: white; font-weight: 600; }
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.user-pill {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 12px;
+  background: var(--surface2);
+  border-radius: 20px; font-size: 13px;
+}
+.user-avatar {
+  width: 26px; height: 26px;
+  background: var(--accent2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: white;
+  font-family: 'Syne', sans-serif;
+}
+.btn-logout {
+  padding: 7px 14px;
+  border: 1.5px solid var(--border);
+  background: transparent; border-radius: 8px;
+  font-size: 12px; font-weight: 600; color: var(--text2);
+  cursor: pointer; transition: all .2s;
+}
+.btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+/* Announcement Banner */
+#ann-banner {
+  padding: 10px 24px;
+  background: var(--accent2);
+  color: white; font-size: 13px;
+  display: none; align-items: center; gap: 12px;
+}
+#ann-banner.show { display: flex; }
+.ann-msg { flex: 1; text-align: center; font-weight: 500; }
+.ann-close { cursor: pointer; opacity: .6; }
+.ann-close:hover { opacity: 1; }
+
+/* Tab Content */
+.tab-content { display: none; padding: 28px; max-width: 1400px; margin: 0 auto; width: 100%; }
+.tab-content.active { display: block; }
+
+/* ─── SEARCH TAB ─── */
+.search-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+}
+.search-card h2 { font-size: 20px; margin-bottom: 6px; }
+.search-card p { color: var(--text2); font-size: 13px; margin-bottom: 24px; }
+.search-fields { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.search-field label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text2); margin-bottom: 7px; }
+.search-field label span { color: var(--accent); }
+.search-input {
+  width: 100%; padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 9px; font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  background: var(--surface2); color: var(--text);
+  outline: none; transition: border-color .2s;
+}
+.search-input:focus { border-color: var(--accent); background: white; }
+.search-input.err { border-color: var(--red); }
+.search-err-msg { font-size: 11px; color: var(--red); margin-top: 4px; display: none; }
+.search-actions { display: flex; gap: 12px; align-items: center; }
+.btn-search {
+  padding: 12px 32px;
+  background: var(--accent); color: white;
+  border: none; border-radius: 9px;
+  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: all .2s;
+  display: flex; align-items: center; gap: 8px;
+}
+.btn-search:hover { background: #D04008; }
+.btn-search:disabled { opacity: .5; cursor: not-allowed; }
+.search-state-row { display: flex; gap: 12px; align-items: center; }
+.sel-input {
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 9px; font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  background: var(--surface2); color: var(--text);
+  outline: none;
+}
+.sel-input:focus { border-color: var(--accent); background: white; }
+
+/* Results */
+#search-results { margin-top: 8px; }
+.results-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 16px;
+}
+.results-count {
+  font-size: 13px; color: var(--text2);
+  background: var(--surface2);
+  padding: 4px 12px; border-radius: 20px;
+}
+.rcard {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: box-shadow .2s, transform .15s;
+  border-left: 4px solid var(--border);
+}
+.rcard:hover { box-shadow: var(--shadow-lg); transform: translateY(-1px); }
+.rcard.rank-1 { border-left-color: var(--accent); }
+.rcard.rank-2 { border-left-color: #6366F1; }
+.rcard.rank-3 { border-left-color: #8B5CF6; }
+.rcard.in-area { border-left-color: var(--green); }
+.rcard-inner { padding: 18px 20px; display: flex; align-items: center; gap: 16px; }
+.rcard-rank {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--surface2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800;
+  color: var(--text2); flex-shrink: 0;
+}
+.rcard.rank-1 .rcard-rank { background: var(--accent); color: white; }
+.rcard-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800;
+  color: white; flex-shrink: 0;
+}
+.rcard-info { flex: 1; min-width: 0; }
+.rcard-name { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 3px; }
+.rcard-meta { font-size: 12px; color: var(--text2); margin-bottom: 6px; }
+.rcard-areas { display: flex; flex-wrap: wrap; gap: 4px; }
+.area-chip {
+  padding: 2px 8px; border-radius: 4px;
+  background: var(--surface2);
+  font-size: 11px; color: var(--text2);
+  border: 1px solid var(--border);
+}
+.area-chip.matched { background: #F0FDF4; color: var(--green); border-color: #86EFAC; font-weight: 600; }
+.rcard-dist { text-align: right; flex-shrink: 0; }
+.dist-num { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--accent2); line-height: 1; }
+.dist-unit { font-size: 10px; text-transform: uppercase; color: var(--text3); letter-spacing: 1px; }
+.dist-type { font-size: 11px; color: var(--green); font-weight: 600; }
+.in-area-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 6px;
+  background: #F0FDF4; color: var(--green);
+  border: 1px solid #86EFAC;
+  font-size: 12px; font-weight: 700;
+}
+.rcard-inactive-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; border-radius: 4px;
+  background: #F5F5F5; color: #888;
+  font-size: 11px; font-weight: 600;
+}
+.rcard-map-btn {
+  padding: 7px 14px;
+  border: 1.5px solid var(--border);
+  background: transparent; border-radius: 7px;
+  font-size: 12px; font-weight: 600; color: var(--text2);
+  cursor: pointer; transition: all .2s;
+  display: flex; align-items: center; gap: 5px;
+  margin-top: 8px;
+}
+.rcard-map-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+.rcard-mapbox { height: 0; overflow: hidden; transition: height .3s ease; }
+.rcard-mapbox.open { height: 240px; }
+.rcard-mapbox > div { height: 100%; width: 100%; }
+
+/* ─── MANAGE TAB ─── */
+.manage-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.manage-title { font-size: 22px; font-weight: 800; }
+.btn-add {
+  padding: 10px 20px;
+  background: var(--accent); color: white;
+  border: none; border-radius: 9px;
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center; gap: 7px;
+}
+.btn-add:hover { background: #D04008; }
+.filter-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+.filter-chip {
+  padding: 6px 14px; border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  font-size: 12px; font-weight: 600; color: var(--text2);
+  cursor: pointer; transition: all .2s;
+}
+.filter-chip.active { background: var(--accent2); color: white; border-color: var(--accent2); }
+.filter-count { font-size: 12px; color: var(--text2); margin-left: auto; }
+.realtor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+.r-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 20px;
+  transition: box-shadow .2s, transform .15s;
+  position: relative;
+}
+.r-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.r-card.inactive { opacity: .65; border-style: dashed; }
+.r-card-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+.r-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800;
+  color: white; flex-shrink: 0;
+}
+.r-card-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; }
+.r-card-company { font-size: 11px; color: var(--text2); }
+.r-expiry-badge {
+  position: absolute; top: 16px; right: 16px;
+  padding: 3px 8px; border-radius: 4px;
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.r-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+.r-tag {
+  padding: 3px 8px; border-radius: 4px;
+  font-size: 11px; font-weight: 600;
+}
+.r-tag.plan { background: #EFF6FF; color: var(--accent2); }
+.r-tag.state { background: var(--surface2); color: var(--text2); }
+.r-tag.radius { background: #FFF7ED; color: #C05621; }
+.r-areas { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 14px; }
+.r-area-chip {
+  padding: 2px 7px; border-radius: 4px;
+  background: var(--surface2); color: var(--text2);
+  font-size: 10px; border: 1px solid var(--border);
+}
+.r-contact { font-size: 12px; color: var(--text2); display: flex; flex-direction: column; gap: 3px; margin-bottom: 14px; }
+.r-card-footer {
+  display: flex; gap: 8px;
+  padding-top: 12px; border-top: 1px solid var(--border);
+}
+.btn-edit, .btn-del, .btn-status {
+  flex: 1; padding: 8px;
+  border-radius: 7px; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all .2s; border: 1.5px solid var(--border);
+  background: transparent; font-family: 'DM Sans', sans-serif;
+}
+.btn-edit:hover { border-color: var(--accent2); color: var(--accent2); }
+.btn-del:hover { border-color: var(--red); color: var(--red); }
+.btn-status.active-btn { color: var(--green); border-color: #86EFAC; background: #F0FDF4; }
+.btn-status.inactive-btn { color: var(--text3); border-color: var(--border); }
+.company-section { margin-top: 32px; }
+.company-section-title { font-size: 14px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.company-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.company-col { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; }
+.company-col-header { padding: 12px 16px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.company-col-header .cnt { background: rgba(255,255,255,.3); padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+.company-row { padding: 10px 16px; font-size: 13px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+.company-row:nth-child(even) { background: var(--surface2); }
+
+/* ─── MODAL ─── */
+.modal-bg {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.4);
+  z-index: 999; display: none;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(2px);
+}
+.modal-bg.open { display: flex; }
+.modal {
+  background: var(--surface);
+  border-radius: 16px;
+  width: 92%; max-width: 560px;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: modalIn .2s ease;
+}
+@keyframes modalIn { from { opacity:0; transform:scale(.95) translateY(10px); } to { opacity:1; transform:none; } }
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-header h3 { font-size: 18px; font-weight: 800; }
+.modal-close { width: 32px; height: 32px; border: none; background: var(--surface2); border-radius: 8px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+.modal-close:hover { background: var(--border); }
+.modal-body { padding: 24px; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+.btn-sec {
+  padding: 10px 20px; border: 1.5px solid var(--border);
+  background: transparent; border-radius: 9px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-sec:hover { background: var(--surface2); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.form-row-full { margin-bottom: 14px; }
+.fm-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text2); display: block; margin-bottom: 6px; }
+.fm-input {
+  width: 100%; padding: 10px 13px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px; font-size: 13px;
+  font-family: 'DM Sans', sans-serif; color: var(--text);
+  background: var(--surface2); outline: none;
+  transition: border-color .2s;
+}
+.fm-input:focus { border-color: var(--accent); background: white; }
+.status-toggle { display: flex; gap: 8px; }
+.status-opt {
+  flex: 1; padding: 9px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px; font-size: 12px; font-weight: 600;
+  cursor: pointer; text-align: center; transition: all .2s;
+  background: transparent; font-family: 'DM Sans', sans-serif;
+}
+.status-opt.sel-active { background: #F0FDF4; border-color: #86EFAC; color: var(--green); }
+.status-opt.sel-inactive { background: #F5F5F5; border-color: #ccc; color: #777; }
+.chips-input-wrap { border: 1.5px solid var(--border); border-radius: 8px; padding: 8px; background: var(--surface2); min-height: 44px; display: flex; flex-wrap: wrap; gap: 5px; align-items: center; cursor: text; }
+.chips-input-wrap:focus-within { border-color: var(--accent); background: white; }
+.chip-tag { padding: 3px 8px; border-radius: 4px; background: var(--accent2); color: white; font-size: 12px; display: flex; align-items: center; gap: 5px; }
+.chip-tag button { background: none; border: none; color: white; cursor: pointer; font-size: 12px; padding: 0; opacity: .7; }
+.chip-tag button:hover { opacity: 1; }
+.chips-raw-input { border: none; background: transparent; outline: none; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); flex: 1; min-width: 100px; }
+
+/* AC Dropdown */
+.ac-drop {
+  position: absolute; top: 100%; left: 0; right: 0;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-top: none; border-radius: 0 0 10px 10px;
+  max-height: 240px; overflow-y: auto;
+  z-index: 500; box-shadow: var(--shadow-lg);
+  display: none;
+}
+.ac-drop.open { display: block; }
+.ac-item {
+  padding: 10px 14px; cursor: pointer;
+  font-size: 13px; display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid var(--surface2);
+  transition: background .15s;
+}
+.ac-item:hover, .ac-item.hl { background: var(--surface2); }
+.ac-badge {
+  padding: 2px 6px; border-radius: 4px;
+  font-size: 10px; font-weight: 700; text-transform: uppercase; flex-shrink: 0;
+}
+.ac-badge.zip { background: #F0FDF4; color: var(--green); }
+.ac-badge.city { background: #EFF6FF; color: var(--accent2); }
+.ac-badge.county { background: #FDF4FF; color: #7C3AED; }
+.ac-main { font-weight: 500; }
+.ac-sub { font-size: 11px; color: var(--text3); margin-left: auto; }
+
+/* ─── ADMIN TAB ─── */
+.admin-tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+.admin-tab {
+  padding: 10px 18px; border: none;
+  background: transparent; font-size: 13px;
+  font-weight: 600; cursor: pointer; color: var(--text2);
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: all .2s; font-family: 'DM Sans', sans-serif;
+}
+.admin-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.admin-panel { display: none; }
+.admin-panel.active { display: block; }
+.data-table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+.data-table th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text2); background: var(--surface2); border-bottom: 1px solid var(--border); }
+.data-table td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid var(--surface2); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--surface2); }
+.status-pill {
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+}
+.status-pill.active { background: #F0FDF4; color: var(--green); }
+.status-pill.pending { background: #FFFBEB; color: var(--amber); }
+.status-pill.paused { background: #FEF2F2; color: var(--red); }
+.status-pill.restricted { background: #FEF2F2; color: var(--red); }
+.action-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+.action-btn {
+  padding: 4px 10px; border-radius: 5px;
+  font-size: 11px; font-weight: 600; cursor: pointer;
+  border: 1.5px solid var(--border); background: transparent;
+  transition: all .2s; font-family: 'DM Sans', sans-serif;
+}
+.action-btn.approve { border-color: var(--green); color: var(--green); }
+.action-btn.approve:hover { background: #F0FDF4; }
+.action-btn.pause { border-color: var(--amber); color: var(--amber); }
+.action-btn.pause:hover { background: #FFFBEB; }
+.action-btn.del { border-color: var(--red); color: var(--red); }
+.action-btn.del:hover { background: #FEF2F2; }
+.action-btn.edit { border-color: var(--accent2); color: var(--accent2); }
+.action-btn.edit:hover { background: #EFF6FF; }
+.log-filters { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+.log-filter-input {
+  padding: 9px 13px; border: 1.5px solid var(--border);
+  border-radius: 8px; font-size: 13px;
+  font-family: 'DM Sans', sans-serif; background: var(--surface);
+  outline: none;
+}
+.log-filter-input:focus { border-color: var(--accent); }
+.btn-export {
+  padding: 9px 18px;
+  background: var(--accent2); color: white;
+  border: none; border-radius: 8px;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  font-family: 'Syne', sans-serif; display: flex; align-items: center; gap: 6px;
+  margin-left: auto;
+}
+.btn-export:hover { background: #142D55; }
+
+/* ─── SETTINGS TAB ─── */
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.settings-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+.settings-card h3 { font-size: 15px; font-weight: 800; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+.settings-card h3::before { content: ''; width: 4px; height: 18px; background: var(--accent); border-radius: 2px; }
+.pw-strength { height: 4px; border-radius: 2px; background: var(--border); margin-top: 6px; overflow: hidden; }
+.pw-strength-bar { height: 100%; border-radius: 2px; transition: width .3s, background .3s; width: 0; }
+
+/* ─── TOAST ─── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  padding: 14px 20px; border-radius: 10px;
+  box-shadow: var(--shadow-lg); font-size: 13px; font-weight: 500;
+  z-index: 9999; display: none; align-items: center; gap: 10px;
+  animation: toastIn .3s ease;
+  max-width: 360px;
+}
+.toast.show { display: flex; }
+.toast.success { background: var(--green); color: white; }
+.toast.error { background: var(--red); color: white; }
+.toast.info { background: var(--accent2); color: white; }
+@keyframes toastIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+
+/* ─── LOADING ─── */
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  display: none;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── EMPTY STATE ─── */
+.empty-state {
+  text-align: center; padding: 60px 24px;
+  color: var(--text2);
+}
+.empty-icon { font-size: 48px; margin-bottom: 16px; }
+.empty-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.empty-desc { font-size: 14px; }
+
+@media (max-width: 768px) {
+  .auth-left { display: none; }
+  .auth-right { padding: 40px 24px; }
+  .search-fields { grid-template-columns: 1fr; }
+  .realtor-grid { grid-template-columns: 1fr; }
+  .settings-grid { grid-template-columns: 1fr; }
+  .company-cols { grid-template-columns: 1fr; }
+  .header-nav .nav-btn { padding: 6px 10px; font-size: 12px; }
+}
+</style>
+
+  <link rel="sitemap" type="application/xml" href="/sitemap.xml"/>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════ AUTH SCREEN ═══════════════════════════════════════════ -->
+<div id="auth-screen">
+  <div class="auth-left">
+    <div class="auth-brand">
+      <div class="auth-brand-logo">
+        <div class="auth-brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="10" r="5" fill="white"/>
+            <circle cx="12" cy="10" r="2.5" fill="#E8500A"/>
+            <path d="M12 15 C7 20 4 22 12 24 C20 22 17 20 12 15Z" fill="white"/>
+            <path d="M5 14 Q12 11 19 14" stroke="white" stroke-width="1.5" stroke-dasharray="2 2" fill="none" opacity="0.6"/>
+          </svg>
+        </div>
+        <div class="auth-brand-name">Route<span>Desk</span></div>
+      </div>
+      <div class="auth-tagline">Real Estate<br/><span>Distance</span><br/>Intelligence</div>
+      <div class="auth-desc">Find the closest licensed realtors to any address. Powered by live driving data and intelligent service area matching.</div>
+    </div>
+    <div class="auth-stats">
+      <div><div class="auth-stat-num">33K+</div><div class="auth-stat-label">ZIP Codes</div></div>
+      <div><div class="auth-stat-num">Live</div><div class="auth-stat-label">Driving Data</div></div>
+      <div><div class="auth-stat-num">Multi</div><div class="auth-stat-label">Tenant</div></div>
+    </div>
+  </div>
+  <div class="auth-right">
+    <!-- LOGIN FORM -->
+    <div class="auth-form-wrap" id="login-form">
+      <div class="auth-title">Welcome back</div>
+      <div class="auth-subtitle">Sign in to your RouteDesk account</div>
+      <div class="auth-msg" id="login-msg"></div>
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input class="form-input" id="lg-user" type="text" placeholder="Enter your username" autocomplete="username"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="lg-pass" type="password" placeholder="Enter your password" autocomplete="current-password"/>
+      </div>
+      <button class="btn-primary" onclick="doLogin()">
+        <span id="login-btn-txt">Sign In</span>
+        <div class="spinner" id="login-spinner"></div>
+      </button>
+      <div class="auth-switch">Don't have an account? <a onclick="showSignup()">Sign Up Now</a></div>
+      <div class="auth-switch" style="margin-top:8px"><a onclick="showForgot()">Forgot password?</a></div>
+    </div>
+    <!-- SIGNUP FORM -->
+    <div class="auth-form-wrap" id="signup-form" style="display:none">
+      <div class="auth-title">Sign Up</div>
+      <div class="auth-subtitle">Fill in your details — an admin will approve your account</div>
+      <div class="auth-msg" id="signup-msg"></div>
+      <div class="form-group">
+        <label class="form-label">Full Name *</label>
+        <input class="form-input" id="sg-name" type="text" placeholder="John Smith"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Company Name *</label>
+        <input class="form-input" id="sg-company" type="text" placeholder="Acme Realty Group"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input class="form-input" id="sg-email" type="email" placeholder="john@company.com"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Username *</label>
+        <input class="form-input" id="sg-user" type="text" placeholder="Choose a username"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password *</label>
+        <input class="form-input" id="sg-pass" type="password" placeholder="Min 8 characters"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input class="form-input" id="sg-phone" type="tel" placeholder="(555) 000-0000"/>
+      </div>
+      <button class="btn-primary" onclick="doSignup()">Submit Request</button>
+      <div class="auth-switch">Already have an account? <a onclick="showLogin()">Sign in</a></div>
+    </div>
+    <!-- FORGOT PASSWORD -->
+    <div class="auth-form-wrap" id="forgot-form" style="display:none">
+      <div class="auth-title">Password Reset</div>
+      <div class="auth-subtitle">Submit a reset request — admin will assign you a new password</div>
+      <div class="auth-msg" id="forgot-msg"></div>
+      <div class="form-group">
+        <label class="form-label">Username *</label>
+        <input class="form-input" id="fp-user" type="text" placeholder="Your username"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input class="form-input" id="fp-email" type="email" placeholder="Your registered email"/>
+      </div>
+      <button class="btn-primary" onclick="doForgot()">Submit Reset Request</button>
+      <div class="auth-switch"><a onclick="showLogin()">← Back to sign in</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ MAIN APP ═══════════════════════════════════════════ -->
+<div id="app-screen">
+  <!-- Announcement Banner -->
+  <div id="ann-banner">
+    <div class="ann-msg" id="ann-msg-text"></div>
+    <div class="ann-close" onclick="dismissAnn()">✕</div>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-logo">
+      <div class="header-logo-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="10" r="5" fill="white"/>
+          <circle cx="12" cy="10" r="2.5" fill="#E8500A"/>
+          <path d="M12 15 C7 20 4 22 12 24 C20 22 17 20 12 15Z" fill="white"/>
+        </svg>
+      </div>
+      Route<span>Desk</span>
+    </div>
+    <div class="header-nav" id="main-nav">
+      <button class="nav-btn active" onclick="showTab('search',this)">🔍 Search</button>
+      <button class="nav-btn" onclick="showTab('manage',this)">👥 Realtors</button>
+      <button class="nav-btn" id="admin-nav-btn" style="display:none" onclick="showTab('admin',this)">⚙️ Admin</button>
+      <button class="nav-btn" onclick="showTab('settings',this)">⚙ Settings</button>
+    </div>
+    <div class="header-right">
+      <div class="user-pill">
+        <div class="user-avatar" id="header-avatar">U</div>
+        <span id="header-username">User</span>
+        <span id="header-role-badge" style="font-size:10px;padding:2px 6px;border-radius:3px;background:var(--accent2);color:white;display:none">ADMIN</span>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- ─── SEARCH TAB ─── -->
+  <div class="tab-content active" id="tab-search">
+    <div class="search-card">
+      <h2>Find Nearest Realtors</h2>
+      <p>Enter the searcher's information to find matching realtors from your database</p>
+      <div class="search-fields">
+        <div class="search-field">
+          <label>Name <span>*</span></label>
+          <input class="search-input" id="s-name" type="text" placeholder="Enter name"/>
+          <div class="search-err-msg" id="s-name-err">Please enter a valid name</div>
+        </div>
+        <div class="search-field">
+          <label>US Phone Number <span>*</span></label>
+          <input class="search-input" id="s-phone" type="tel" placeholder="(555) 123-4567"/>
+          <div class="search-err-msg" id="s-phone-err">Enter a valid US phone number</div>
+        </div>
+        <div class="search-field" style="position:relative">
+          <label>Address / ZIP / City / County <span>*</span></label>
+          <input class="search-input" id="s-addr" type="text" placeholder="e.g. 27312 or Pittsboro NC" oninput="buildSuggestions(this.value,'s-addr-drop','search'); autoDetectState(this.value)" autocomplete="off"/>
+          <div class="search-err-msg" id="s-addr-err">Please enter a location</div>
+          <div class="ac-drop" id="s-addr-drop"></div>
+        </div>
+      </div>
+      <div class="search-state-row" style="margin-bottom:16px">
+        <div>
+          <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);display:block;margin-bottom:7px">State Filter</label>
+          <select class="sel-input" id="s-state">
+            <option value="">All States</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);display:block;margin-bottom:7px">Max Miles</label>
+          <select class="sel-input" id="s-miles">
+            <option value="50">50 miles</option>
+            <option value="100">100 miles</option>
+            <option value="150">150 miles</option>
+            <option value="200">200 miles</option>
+            <option value="9999">No limit</option>
+          </select>
+        </div>
+      </div>
+      <div class="search-actions">
+        <button class="btn-search" onclick="runSearch()" id="search-btn">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="white" stroke-width="2"/><path d="M20 20L16 16" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+          Search Realtors
+          <div class="spinner" id="search-spinner"></div>
+        </button>
+      </div>
+    </div>
+    <div id="search-results"></div>
+  </div>
+
+  <!-- ─── MANAGE TAB ─── -->
+  <div class="tab-content" id="tab-manage">
+    <div class="manage-header">
+      <div class="manage-title">My Realtors</div>
+      <button class="btn-add" onclick="openAddModal()">+ Add Realtor</button>
+    </div>
+    <div class="filter-bar">
+      <button class="filter-chip active" onclick="setMFilter('all',this)">All</button>
+      <button class="filter-chip" onclick="setMFilter('active',this)">🟢 Active</button>
+      <button class="filter-chip" onclick="setMFilter('inactive',this)">⚫ Inactive</button>
+      <div class="filter-count" id="filter-count"></div>
+      <button class="btn-add" style="padding:7px 14px;font-size:12px;background:var(--green)" onclick="bulkActivate()">✅ Set All Active</button>
+    </div>
+    <div class="realtor-grid" id="realtor-grid"></div>
+    <div class="company-section">
+      <div class="company-section-title">By Company</div>
+      <div class="company-cols" id="company-cols"></div>
+    </div>
+  </div>
+
+  <!-- ─── ADMIN TAB ─── -->
+  <div class="tab-content" id="tab-admin">
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="showAdminPanel('users',this)">👤 Users</button>
+      <button class="admin-tab" onclick="showAdminPanel('logs',this)">📋 Search Logs</button>
+      <button class="admin-tab" onclick="showAdminPanel('announce',this)">📢 Announcement</button>
+      <button class="admin-tab" onclick="showAdminPanel('pwd-requests',this)">🔑 Password Requests</button>
+    </div>
+    <!-- Users Panel -->
+    <div class="admin-panel active" id="ap-users">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+        <button class="btn-add" onclick="loadUsers()">↺ Refresh</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="data-table" id="users-table">
+          <thead><tr>
+            <th>Username</th><th>Full Name</th><th>Company</th>
+            <th>Email</th><th>Status</th><th>Joined</th>
+            <th>Last Login</th><th>Password</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="users-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Logs Panel -->
+    <div class="admin-panel" id="ap-logs">
+      <div class="log-filters">
+        <input class="log-filter-input" type="date" id="log-from" placeholder="From"/>
+        <input class="log-filter-input" type="date" id="log-to" placeholder="To"/>
+        <select class="log-filter-input" id="log-user-filter">
+          <option value="">All Users</option>
+        </select>
+        <button class="btn-add" onclick="loadLogs()">Filter</button>
+        <button class="btn-export" onclick="exportLogs()">⬇ Export CSV</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="data-table" id="logs-table">
+          <thead><tr>
+            <th>Time</th><th>User</th><th>Name</th>
+            <th>Phone</th><th>Address</th><th>Results</th><th>Top Match</th>
+          </tr></thead>
+          <tbody id="logs-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Announcement Panel -->
+    <div class="admin-panel" id="ap-announce">
+      <div class="settings-card" style="max-width:560px">
+        <h3>Header Announcement</h3>
+        <div class="form-row-full">
+          <label class="fm-label">Message</label>
+          <input class="fm-input" id="ann-text" type="text" placeholder="KINDLY MOVE TO PAID VERSION FOR LATER USE"/>
+        </div>
+        <div class="form-row-full">
+          <label class="fm-label">Signature</label>
+          <input class="fm-input" id="ann-sig" type="text" placeholder="— Umar"/>
+        </div>
+        <div class="form-row-full">
+          <label class="fm-label">Animation Style</label>
+          <select class="fm-input" id="ann-anim">
+            <option value="static">⚡ Static</option>
+            <option value="marquee">🎞 Marquee</option>
+            <option value="pulse">💫 Pulse</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <button class="btn-primary" style="width:auto;padding:10px 24px" onclick="saveAnn(true)">Show to Users</button>
+          <button class="btn-sec" onclick="saveAnn(false)">Hide Banner</button>
+        </div>
+      </div>
+    </div>
+    <!-- Password Requests Panel -->
+    <div class="admin-panel" id="ap-pwd-requests">
+      <div style="overflow-x:auto">
+        <table class="data-table" id="pwd-table">
+          <thead><tr>
+            <th>Username</th><th>Requested</th><th>Status</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="pwd-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SETTINGS TAB ─── -->
+  <div class="tab-content" id="tab-settings">
+    <div class="settings-grid">
+      <div class="settings-card">
+        <h3>My Profile</h3>
+        <div class="form-row-full">
+          <label class="fm-label">Full Name</label>
+          <input class="fm-input" id="prof-name" type="text"/>
+        </div>
+        <div class="form-row-full">
+          <label class="fm-label">Company Name</label>
+          <input class="fm-input" id="prof-company" type="text"/>
+        </div>
+        <div class="form-row-full">
+          <label class="fm-label">Email</label>
+          <input class="fm-input" id="prof-email" type="email"/>
+        </div>
+        <div class="form-row-full">
+          <label class="fm-label">Phone</label>
+          <input class="fm-input" id="prof-phone" type="tel"/>
+        </div>
+        <button class="btn-primary" style="margin-top:8px" onclick="saveProfile()">Save Profile</button>
+      </div>
+      <div class="settings-card">
+        <h3>Change Password</h3>
+        <div class="form-row-full">
+          <label class="fm-label">Current Password</label>
+          <input class="fm-input" id="pw-cur" type="password" placeholder="Current password"/>
+        </div>
+        <div class="form-row-full">
+          <label class="fm-label">New Password</label>
+          <input class="fm-input" id="pw-new" type="password" placeholder="New password" oninput="checkPwStrength(this.value)"/>
+          <div class="pw-strength"><div class="pw-strength-bar" id="pw-bar"></div></div>
+        </div>
+        <div class="form-row-full">
+          <label class="fm-label">Confirm New Password</label>
+          <input class="fm-input" id="pw-conf" type="password" placeholder="Confirm new password"/>
+        </div>
+        <button class="btn-primary" style="margin-top:8px" onclick="changePassword()">Update Password</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── ADD/EDIT REALTOR MODAL ─── -->
+<div class="modal-bg" id="realtor-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Add Realtor</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="r-id"/>
+      <div class="form-row">
+        <div>
+          <label class="fm-label">Full Name *</label>
+          <input class="fm-input" id="r-name" type="text" placeholder="Jane Doe"/>
+        </div>
+        <div>
+          <label class="fm-label">Phone</label>
+          <input class="fm-input" id="r-phone" type="tel" placeholder="(555) 000-0000"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label class="fm-label">Email</label>
+          <input class="fm-input" id="r-email" type="email" placeholder="jane@realty.com"/>
+        </div>
+        <div>
+          <label class="fm-label">Company</label>
+          <input class="fm-input" id="r-company" type="text" placeholder="Acme Realty"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label class="fm-label">Plan</label>
+          <input class="fm-input" id="r-plan" type="text" placeholder="Gold, Premium, etc."/>
+        </div>
+        <div>
+          <label class="fm-label">State</label>
+          <select class="fm-input" id="r-state"></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label class="fm-label">Radius (miles)</label>
+          <input class="fm-input" id="r-radius" type="number" value="50" min="1"/>
+        </div>
+        <div>
+          <label class="fm-label">Signup Date</label>
+          <input class="fm-input" id="r-signup" type="date"/>
+        </div>
+      </div>
+      <div class="form-row-full">
+        <label class="fm-label">Expiry Date</label>
+        <input class="fm-input" id="r-expiry" type="date"/>
+      </div>
+      <div class="form-row-full">
+        <label class="fm-label">Service Areas (type and press comma or enter)</label>
+        <div class="chips-input-wrap" id="r-areas-wrap" onclick="document.getElementById('r-areas-input').focus()">
+          <input class="chips-raw-input" id="r-areas-input" type="text" placeholder="ZIP, City, or County..." oninput="buildSuggestions(this.value,'r-areas-drop','chip')" onkeydown="handleChipKey(event)"/>
+        </div>
+        <div class="ac-drop" id="r-areas-drop" style="position:relative;top:0;border-top:1.5px solid var(--border);border-radius:0 0 8px 8px"></div>
+      </div>
+      <div class="form-row-full">
+        <label class="fm-label">Status</label>
+        <div class="status-toggle">
+          <button class="status-opt sel-active" id="s-opt-active" onclick="setStatusOpt('active')">🟢 Active</button>
+          <button class="status-opt" id="s-opt-inactive" onclick="setStatusOpt('inactive')">⚫ Inactive</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sec" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" style="width:auto;padding:10px 24px" onclick="saveRealtor()">Save Realtor</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit User Modal (Admin) -->
+<div class="modal-bg" id="edit-user-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Edit User</h3>
+      <button class="modal-close" onclick="document.getElementById('edit-user-modal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="eu-id"/>
+      <div class="form-row-full">
+        <label class="fm-label">Username</label>
+        <input class="fm-input" id="eu-username" type="text"/>
+      </div>
+      <div class="form-row-full">
+        <label class="fm-label">Password</label>
+        <input class="fm-input" id="eu-password" type="text" placeholder="New password"/>
+      </div>
+      <div class="form-row-full">
+        <label class="fm-label">Full Name</label>
+        <input class="fm-input" id="eu-fullname" type="text"/>
+      </div>
+      <div class="form-row-full">
+        <label class="fm-label">Company</label>
+        <input class="fm-input" id="eu-company" type="text"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sec" onclick="document.getElementById('edit-user-modal').classList.remove('open')">Cancel</button>
+      <button class="btn-primary" style="width:auto;padding:10px 24px" onclick="saveUserEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════════ SCRIPTS ═══════════════════════════════════════════ -->
+<script>
+// ─── CONFIG ───
+const SB = 'https://kredowrppanxeylwjxye.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyZWRvd3JwcGFueGV5bHdqeHllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMzg5NzAsImV4cCI6MjA5NTkxNDk3MH0.-ThTmG0KvY9o5PltgyNuyAsUbOkrvZifqFB10ZNoCxg';
+const MB_KEY = 'pk.eyJ1IjoidW1yMzY5MyIsImEiOiJjbXA5OG13ZjMwNGpzMnNwY2poeTdmMXQ0In0.6iH7sV448gmibWkF9C75bA';
+mapboxgl.accessToken = MB_KEY;
+
+const HEADERS = {'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+
+// ─── STATE ───
+let currentUser = null;
+let allRealtors = [];
+let mFilter = 'all';
+let rStatusSel = 'active';
+let currentAreas = [];
+let editingId = null;
+let geoCache = {};
+let _mlMaps = {};
+let ZIP_DB = {}, CITY_IDX = {}, COUNTY_DB = {};
+
+// ─── DB HELPERS ───
+async function dbGet(table, filters='', extra=''){
+  const r = await fetch(`${SB}/rest/v1/${table}?${filters}${extra}`,{headers:HEADERS});
+  return r.json();
+}
+async function dbInsert(table, data){
+  const r = await fetch(`${SB}/rest/v1/${table}`,{method:'POST',headers:{...HEADERS,'Prefer':'return=representation'},body:JSON.stringify(data)});
+  return r.json();
+}
+async function dbUpdate(table, filters, data){
+  const r = await fetch(`${SB}/rest/v1/${table}?${filters}`,{method:'PATCH',headers:{...HEADERS,'Prefer':'return=representation'},body:JSON.stringify(data)});
+  return r.json();
+}
+async function dbDelete(table, filters){
+  await fetch(`${SB}/rest/v1/${table}?${filters}`,{method:'DELETE',headers:HEADERS});
+}
+async function dbUpsert(table, data, onConflict=''){
+  const q = onConflict ? `?on_conflict=${onConflict}` : '';
+  const r = await fetch(`${SB}/rest/v1/${table}${q}`,{method:'POST',headers:{...HEADERS,'Prefer':'resolution=merge-duplicates,return=representation'},body:JSON.stringify(data)});
+  return r.json();
+}
+
+// ─── TOAST ───
+function toast(msg, type='info', dur=3000){
+  const t = document.getElementById('toast');
+  t.className = `toast show ${type}`;
+  t.textContent = msg;
+  setTimeout(()=>{ t.classList.remove('show'); }, dur);
+}
+
+// ─── US STATES ───
+const US_STATES = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
+const STATE_CODES = {Alabama:'AL',Alaska:'AK',Arizona:'AZ',Arkansas:'AR',California:'CA',Colorado:'CO',Connecticut:'CT',Delaware:'DE',Florida:'FL',Georgia:'GA',Hawaii:'HI',Idaho:'ID',Illinois:'IL',Indiana:'IN',Iowa:'IA',Kansas:'KS',Kentucky:'KY',Louisiana:'LA',Maine:'ME',Maryland:'MD',Massachusetts:'MA',Michigan:'MI',Minnesota:'MN',Mississippi:'MS',Missouri:'MO',Montana:'MT',Nebraska:'NE',Nevada:'NV','New Hampshire':'NH','New Jersey':'NJ','New Mexico':'NM','New York':'NY','North Carolina':'NC','North Dakota':'ND',Ohio:'OH',Oklahoma:'OK',Oregon:'OR',Pennsylvania:'PA','Rhode Island':'RI','South Carolina':'SC','South Dakota':'SD',Tennessee:'TN',Texas:'TX',Utah:'UT',Vermont:'VT',Virginia:'VA',Washington:'WA','West Virginia':'WV',Wisconsin:'WI',Wyoming:'WY'};
+
+function populateStateSelects(){
+  ['s-state','r-state'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    const hasAll = id==='s-state';
+    el.innerHTML = hasAll ? '<option value="">All States</option>' : '<option value="">Select State</option>';
+    US_STATES.forEach(s=>{ el.innerHTML += `<option value="${STATE_CODES[s]}">${s}</option>`; });
+  });
+}
+
+// ─── AUTH FLOWS ───
+function showLogin(){ document.getElementById('login-form').style.display=''; document.getElementById('signup-form').style.display='none'; document.getElementById('forgot-form').style.display='none'; }
+function showSignup(){ document.getElementById('signup-form').style.display=''; document.getElementById('login-form').style.display='none'; document.getElementById('forgot-form').style.display='none'; }
+function showForgot(){ document.getElementById('forgot-form').style.display=''; document.getElementById('login-form').style.display='none'; document.getElementById('signup-form').style.display='none'; }
+
+function setMsg(id, msg, type){ const el=document.getElementById(id); el.textContent=msg; el.className=`auth-msg ${type}`; }
+
+async function doLogin(){
+  const user = document.getElementById('lg-user').value.trim();
+  const pass = document.getElementById('lg-pass').value;
+  if(!user||!pass){ setMsg('login-msg','Please fill in all fields','error'); return; }
+  document.getElementById('login-spinner').style.display='block';
+  document.getElementById('login-btn-txt').textContent='Signing in...';
+  try {
+    const data = await dbGet('users',`username=eq.${encodeURIComponent(user)}&select=*`);
+    if(!data||!data.length){ setMsg('login-msg','Invalid username or password','error'); return; }
+    const u = data[0];
+    if(u.password_plain !== pass){ setMsg('login-msg','Invalid username or password','error'); return; }
+    if(u.status==='pending'){ setMsg('login-msg','Your account is pending admin approval. Please wait.','info'); return; }
+    if(u.status==='paused'||u.status==='restricted'){ setMsg('login-msg','Your account has been restricted. Please contact admin.','error'); return; }
+    await dbUpdate('users',`id=eq.${u.id}`,{last_login:new Date().toISOString()});
+    currentUser = u;
+    await launchApp();
+  } catch(e){ setMsg('login-msg','Connection error. Please try again.','error'); }
+  finally{ document.getElementById('login-spinner').style.display='none'; document.getElementById('login-btn-txt').textContent='Sign In'; }
+}
+
+async function doSignup(){
+  const name=document.getElementById('sg-name').value.trim();
+  const company=document.getElementById('sg-company').value.trim();
+  const email=document.getElementById('sg-email').value.trim();
+  const user=document.getElementById('sg-user').value.trim();
+  const pass=document.getElementById('sg-pass').value;
+  const phone=document.getElementById('sg-phone').value.trim();
+  if(!name||!company||!email||!user||!pass){ setMsg('signup-msg','Please fill in all required fields','error'); return; }
+  if(pass.length<8){ setMsg('signup-msg','Password must be at least 8 characters','error'); return; }
+  try {
+    const existing = await dbGet('users',`username=eq.${encodeURIComponent(user)}&select=id`);
+    if(existing&&existing.length){ setMsg('signup-msg','Username already taken','error'); return; }
+    await dbInsert('users',{username:user,password_plain:pass,full_name:name,company_name:company,email,phone,role:'user',status:'pending'});
+    setMsg('signup-msg','✅ Request submitted! An admin will review and approve your account.','success');
+    setTimeout(showLogin, 3000);
+  } catch(e){ setMsg('signup-msg','Error submitting request. Try again.','error'); }
+}
+
+async function doForgot(){
+  const user=document.getElementById('fp-user').value.trim();
+  const email=document.getElementById('fp-email').value.trim();
+  if(!user||!email){ setMsg('forgot-msg','Please fill in all fields','error'); return; }
+  try {
+    const data = await dbGet('users',`username=eq.${encodeURIComponent(user)}&email=eq.${encodeURIComponent(email)}&select=id`);
+    if(!data||!data.length){ setMsg('forgot-msg','No account found with that username and email','error'); return; }
+    await dbInsert('password_reset_requests',{user_id:data[0].id,status:'pending'});
+    setMsg('forgot-msg','✅ Reset request submitted. Admin will assign you a new password.','success');
+  } catch(e){ setMsg('forgot-msg','Error submitting request. Try again.','error'); }
+}
+
+function doLogout(){
+  sessionStorage.removeItem('rd_user');
+  currentUser=null; allRealtors=[];
+  document.getElementById('app-screen').style.display='none';
+  document.getElementById('auth-screen').style.display='flex';
+  document.getElementById('lg-user').value='';
+  document.getElementById('lg-pass').value='';
+  document.getElementById('login-msg').className='auth-msg';
+}
+
+// ─── LAUNCH APP ───
+// launchApp defined below
+
+// ─── TABS ───
+function showTab(name, btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(name==='manage') renderManage();
+  if(name==='admin'){ loadUsers(); loadLogs(); loadPwdRequests(); }
+  if(name==='settings') loadProfile();
+}
+
+// ─── LOAD REALTORS ───
+async function loadRealtors(){
+  try {
+    allRealtors = await dbGet('realtors',`user_id=eq.${currentUser.id}&select=*&order=created_at.desc`);
+    if(!Array.isArray(allRealtors)) allRealtors=[];
+  } catch(e){ allRealtors=[]; }
+}
+
+// ─── MANAGE TAB ───
+function setMFilter(f, btn){
+  mFilter=f;
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderManage();
+}
+
+async function renderManage(){
+  await loadRealtors();
+  const filtered = allRealtors.filter(r=>{
+    if(mFilter==='active') return (r.status||'active')==='active';
+    if(mFilter==='inactive') return r.status==='inactive';
+    return true;
+  });
+  document.getElementById('filter-count').textContent=`${filtered.length} of ${allRealtors.length} shown`;
+  const grid = document.getElementById('realtor-grid');
+  if(!filtered.length){ grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">👥</div><div class="empty-title">No realtors found</div><div class="empty-desc">Add your first realtor using the button above</div></div>`; }
+  else { grid.innerHTML = filtered.map(r=>realtorCard(r)).join(''); }
+  // Company cols
+  const companies = [...new Set(allRealtors.map(r=>r.company||'Unknown'))];
+  const colsEl = document.getElementById('company-cols');
+  colsEl.innerHTML = companies.slice(0,4).map(c=>{
+    const list = allRealtors.filter(r=>(r.company||'Unknown')===c);
+    const clr = stringToColor(c);
+    return `<div class="company-col">
+      <div class="company-col-header" style="background:${clr};color:white">
+        ${c} <span class="cnt">${list.length}</span>
+      </div>
+      ${list.map(r=>`<div class="company-row">
+        <span style="width:8px;height:8px;border-radius:50%;background:${(r.status||'active')==='active'?'var(--green)':'#ccc'};display:inline-block"></span>
+        <span style="flex:1;font-weight:500">${r.name||'—'}</span>
+        <span class="r-tag plan" style="font-size:10px">${r.plan||'—'}</span>
+        <span style="font-size:11px;color:var(--text3)">${r.state||''}</span>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+function realtorCard(r){
+  const status = r.status||'active';
+  const areas = Array.isArray(r.service_areas)?r.service_areas:[];
+  const expDays = r.expiry_date ? Math.ceil((new Date(r.expiry_date)-new Date())/(1000*60*60*24)) : null;
+  const expColor = expDays===null?'var(--text3)':expDays<30?'var(--red)':expDays<60?'var(--amber)':'var(--green)';
+  const expBg = expDays===null?'var(--surface2)':expDays<30?'#FEF2F2':expDays<60?'#FFFBEB':'#F0FDF4';
+  return `<div class="r-card ${status==='inactive'?'inactive':''}" id="rc-${r.id}">
+    ${expDays!==null?`<div class="r-expiry-badge" style="color:${expColor};background:${expBg}">${expDays}d left</div>`:''}
+    <div class="r-card-top">
+      <div class="r-avatar" style="background:${stringToColor(r.name||'?')}">${(r.name||'?').charAt(0).toUpperCase()}</div>
+      <div>
+        <div class="r-card-name">${r.name||'—'}</div>
+        <div class="r-card-company">${r.company||'—'}</div>
+      </div>
+    </div>
+    <div class="r-tags">
+      ${r.plan?`<span class="r-tag plan">${r.plan}</span>`:''}
+      ${r.state?`<span class="r-tag state">${r.state}</span>`:''}
+      ${r.radius?`<span class="r-tag radius">${r.radius} mi</span>`:''}
+    </div>
+    <div class="r-areas">${areas.slice(0,6).map(a=>`<span class="r-area-chip">${a}</span>`).join('')}${areas.length>6?`<span class="r-area-chip">+${areas.length-6}</span>`:''}</div>
+    <div class="r-contact">
+      ${r.phone?`<span>📞 ${r.phone}</span>`:''}
+      ${r.email?`<span>✉️ ${r.email}</span>`:''}
+    </div>
+    <div class="r-card-footer">
+      <button class="btn-edit" onclick="openEditModal('${r.id}')">Edit</button>
+      <button class="btn-status ${status==='active'?'active-btn':'inactive-btn'}" onclick="toggleStatus('${r.id}','${status}')">${status==='active'?'🟢 Active':'⚫ Inactive'}</button>
+      <button class="btn-del" onclick="deleteRealtor('${r.id}')">Delete</button>
+    </div>
+  </div>`;
+}
+
+async function toggleStatus(id, cur){
+  const nxt = cur==='active'?'inactive':'active';
+  await dbUpdate('realtors',`id=eq.${id}`,{status:nxt});
+  toast(`Realtor marked as ${nxt}`, 'info');
+  renderManage();
+}
+
+async function deleteRealtor(id){
+  if(!confirm('Delete this realtor? This cannot be undone.')) return;
+  await dbDelete('realtors',`id=eq.${id}`);
+  toast('Realtor deleted','error');
+  renderManage();
+}
+
+async function bulkActivate(){
+  const filtered = allRealtors.filter(r=>{
+    if(mFilter==='all') return true;
+    if(mFilter==='inactive') return r.status==='inactive';
+    return false;
+  });
+  if(!filtered.length){ toast('No realtors to update','info'); return; }
+  for(const r of filtered){
+    await dbUpdate('realtors',`id=eq.${r.id}`,{status:'active'});
+  }
+  toast(`${filtered.length} realtors set to active`,'success');
+  renderManage();
+}
+
+// ─── ADD/EDIT MODAL ───
+function openAddModal(){
+  editingId=null; currentAreas=[];
+  document.getElementById('modal-title').textContent='Add Realtor';
+  document.getElementById('r-id').value='';
+  ['r-name','r-phone','r-email','r-company','r-plan','r-radius'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value = id==='r-radius'?'50':'';
+  });
+  document.getElementById('r-state').value='';
+  document.getElementById('r-signup').value='';
+  document.getElementById('r-expiry').value='';
+  renderAreaChips();
+  setStatusOpt('active');
+  document.getElementById('realtor-modal').classList.add('open');
+}
+
+function openEditModal(id){
+  const r = allRealtors.find(x=>x.id===id);
+  if(!r) return;
+  editingId=id;
+  document.getElementById('modal-title').textContent='Edit Realtor';
+  document.getElementById('r-id').value=id;
+  document.getElementById('r-name').value=r.name||'';
+  document.getElementById('r-phone').value=r.phone||'';
+  document.getElementById('r-email').value=r.email||'';
+  document.getElementById('r-company').value=r.company||'';
+  document.getElementById('r-plan').value=r.plan||'';
+  document.getElementById('r-state').value=r.state||'';
+  document.getElementById('r-radius').value=r.radius||50;
+  document.getElementById('r-signup').value=r.signup_date||'';
+  document.getElementById('r-expiry').value=r.expiry_date||'';
+  currentAreas = Array.isArray(r.service_areas)?[...r.service_areas]:[];
+  renderAreaChips();
+  setStatusOpt(r.status||'active');
+  document.getElementById('realtor-modal').classList.add('open');
+}
+
+function closeModal(){ document.getElementById('realtor-modal').classList.remove('open'); document.getElementById('r-areas-drop').classList.remove('open'); }
+
+function setStatusOpt(s){
+  rStatusSel=s;
+  document.getElementById('s-opt-active').className=`status-opt ${s==='active'?'sel-active':''}`;
+  document.getElementById('s-opt-inactive').className=`status-opt ${s==='inactive'?'sel-inactive':''}`;
+}
+
+async function saveRealtor(){
+  const name=document.getElementById('r-name').value.trim();
+  if(!name){ toast('Name is required','error'); return; }
+  const data = {
+    user_id: currentUser.id,
+    name, phone:document.getElementById('r-phone').value.trim(),
+    email:document.getElementById('r-email').value.trim(),
+    company:document.getElementById('r-company').value.trim(),
+    plan:document.getElementById('r-plan').value.trim(),
+    state:document.getElementById('r-state').value,
+    radius:parseInt(document.getElementById('r-radius').value)||50,
+    signup_date:document.getElementById('r-signup').value||null,
+    expiry_date:document.getElementById('r-expiry').value||null,
+    service_areas:currentAreas,
+    status:rStatusSel
+  };
+  if(editingId){
+    await dbUpdate('realtors',`id=eq.${editingId}`,data);
+    toast('Realtor updated','success');
+  } else {
+    data.id = 'r_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+    await dbInsert('realtors',data);
+    toast('Realtor added','success');
+  }
+  closeModal();
+  renderManage();
+}
+
+// ─── CHIPS ───
+function renderAreaChips(){
+  const wrap = document.getElementById('r-areas-wrap');
+  const inp = document.getElementById('r-areas-input');
+  wrap.innerHTML='';
+  currentAreas.forEach((a,i)=>{
+    const chip=document.createElement('span');
+    chip.className='chip-tag';
+    chip.innerHTML=`${a} <button onclick="removeChip(${i})">✕</button>`;
+    wrap.appendChild(chip);
+  });
+  wrap.appendChild(inp);
+}
+function removeChip(i){ currentAreas.splice(i,1); renderAreaChips(); }
+function addChip(val){
+  const v=val.trim().replace(/,$/,'').trim();
+  if(v&&!currentAreas.includes(v)){ currentAreas.push(v); }
+  document.getElementById('r-areas-input').value='';
+  document.getElementById('r-areas-drop').classList.remove('open');
+  renderAreaChips();
+}
+function handleChipKey(e){
+  const inp=e.target;
+  if(e.key===','||e.key==='Enter'){ e.preventDefault(); addChip(inp.value); }
+  else if(e.key==='Backspace'&&!inp.value.length&&currentAreas.length){ currentAreas.pop(); renderAreaChips(); }
+}
+
+// ─── AUTOCOMPLETE ───
+async function buildSuggestions(q, dropId, mode){
+  const drop = document.getElementById(dropId);
+  if(!q||q.length<2){ drop.classList.remove('open'); return; }
+  const items=[];
+  const ql=q.toLowerCase();
+  // ZIP
+  if(/^\d+/.test(q)){
+    Object.keys(ZIP_DB).filter(z=>z.startsWith(q)).slice(0,4).forEach(z=>{
+      const d=ZIP_DB[z];
+      items.push({type:'zip',label:z,sub:`${d.city}, ${d.st} · ${d.county} County`,val:z});
+    });
+  }
+  // City
+  let cityFound=0;
+  Object.keys(CITY_IDX).forEach(k=>{
+    if(cityFound>=4) return;
+    if(k.startsWith(ql)){ const d=CITY_IDX[k]; items.push({type:'city',label:d.city,sub:`${d.county} County, ${d.st}`,val:d.city+', '+d.st}); cityFound++; }
+  });
+  // County
+  let countyFound=0;
+  Object.keys(COUNTY_DB).forEach(k=>{
+    if(countyFound>=3) return;
+    if(k.startsWith(ql)){ const d=COUNTY_DB[k]; items.push({type:'county',label:d.name+' County',sub:d.st,val:d.name+' County, '+d.st}); countyFound++; }
+  });
+  // Mapbox fallback
+  if(items.length<3){
+    try {
+      const r = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?access_token=${MB_KEY}&country=us&limit=4&types=address,postcode,place,district`);
+      const d = await r.json();
+      (d.features||[]).forEach(f=>{
+        const label=f.place_name||f.text;
+        if(!items.find(x=>x.label===f.text))
+          items.push({type:'place',label:f.text,sub:label,val:f.place_name||f.text});
+      });
+    } catch(e){}
+  }
+  if(!items.length){ drop.classList.remove('open'); return; }
+  const typeColors={zip:'zip',city:'city',county:'county',place:'zip'};
+  drop.innerHTML=items.map((it,i)=>`<div class="ac-item" onclick="${mode==='chip'?`addChip('${it.val.replace(/'/g,"\\'")}')`:``}${mode==='search'?`selectSearchAddr('${it.val.replace(/'/g,"\\'")}')`:``}">
+    <span class="ac-badge ${typeColors[it.type]||'city'}">${it.type.toUpperCase()}</span>
+    <span class="ac-main">${it.label}</span>
+    <span class="ac-sub">${it.sub}</span>
+  </div>`).join('');
+  drop.classList.add('open');
+}
+
+function selectSearchAddr(val){
+  document.getElementById('s-addr').value=val;
+  document.getElementById('s-addr-drop').classList.remove('open');
+  autoDetectState(val);
+}
+
+function autoDetectState(val){
+  if(!val || val.length < 2) return;
+  const v = val.trim();
+  // ZIP code - instant lookup from ZIP_DB
+  const zipMatch = v.match(/\b(\d{5})\b/);
+  if(zipMatch){
+    const zip = zipMatch[1];
+    if(ZIP_DB[zip]){
+      const st = ZIP_DB[zip].st;
+      const sel = document.getElementById('s-state');
+      if(st && sel) sel.value = st;
+      return;
+    }
+  }
+  // State name/code in text e.g. "Pittsboro NC" or "Pittsboro, North Carolina"
+  const upper = v.toUpperCase();
+  const stCodes = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
+  for(const code of stCodes){
+    // match " NC" or ",NC" or " NC," at end or in middle
+    const re = new RegExp('(\\s|,)' + code + '(\\s|,|$)');
+    if(re.test(upper)){
+      document.getElementById('s-state').value = code;
+      return;
+    }
+  }
+  // Full state name
+  const stNames = {alabama:'AL',alaska:'AK',arizona:'AZ',arkansas:'AR',california:'CA',colorado:'CO',connecticut:'CT',delaware:'DE',florida:'FL',georgia:'GA',hawaii:'HI',idaho:'ID',illinois:'IL',indiana:'IN',iowa:'IA',kansas:'KS',kentucky:'KY',louisiana:'LA',maine:'ME',maryland:'MD',massachusetts:'MA',michigan:'MI',minnesota:'MN',mississippi:'MS',missouri:'MO',montana:'MT',nebraska:'NE',nevada:'NV','new hampshire':'NH','new jersey':'NJ','new mexico':'NM','new york':'NY','north carolina':'NC','north dakota':'ND',ohio:'OH',oklahoma:'OK',oregon:'OR',pennsylvania:'PA','rhode island':'RI','south carolina':'SC','south dakota':'SD',tennessee:'TN',texas:'TX',utah:'UT',vermont:'VT',virginia:'VA',washington:'WA','west virginia':'WV',wisconsin:'WI',wyoming:'WY'};
+  const lower = v.toLowerCase();
+  for(const [name,code] of Object.entries(stNames)){
+    if(lower.includes(name)){
+      document.getElementById('s-state').value = code;
+      return;
+    }
+  }
+  // If geocode result comes back — also set state from tCoord
+}
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#s-addr')&&!e.target.closest('#s-addr-drop')) document.getElementById('s-addr-drop').classList.remove('open');
+  if(!e.target.closest('#r-areas-input')&&!e.target.closest('#r-areas-drop')&&!e.target.closest('#r-areas-wrap')) document.getElementById('r-areas-drop').classList.remove('open');
+});
+
+// ─── PHONE VALIDATION ───
+function isValidUSPhone(p){
+  const clean=p.replace(/\D/g,'');
+  if(clean.length===11&&clean.startsWith('1')) return isValidUSPhone(clean.slice(1));
+  if(clean.length!==10) return false;
+  const dummies=['0000000000','1111111111','2222222222','3333333333','4444444444','5555555555','6666666666','7777777777','8888888888','9999999999','1234567890','0987654321'];
+  if(dummies.includes(clean)) return false;
+  if(new Set(clean).size<=2) return false;
+  const area=parseInt(clean.substring(0,3));
+  if(area<200||area===800||area===900) return false;
+  return true;
+}
+
+// ─── SEARCH ───
+async function runSearch(){
+  const name=document.getElementById('s-name').value.trim();
+  const phone=document.getElementById('s-phone').value.trim();
+  const addr=document.getElementById('s-addr').value.trim();
+  let valid=true;
+  // Validate name
+  if(!name||name.length<2||/^[^a-zA-Z]+$/.test(name)){
+    document.getElementById('s-name').classList.add('err');
+    document.getElementById('s-name-err').style.display='block';
+    valid=false;
+  } else { document.getElementById('s-name').classList.remove('err'); document.getElementById('s-name-err').style.display='none'; }
+  // Validate phone
+  if(!phone||!isValidUSPhone(phone)){
+    document.getElementById('s-phone').classList.add('err');
+    document.getElementById('s-phone-err').style.display='block';
+    valid=false;
+  } else { document.getElementById('s-phone').classList.remove('err'); document.getElementById('s-phone-err').style.display='none'; }
+  // Validate address
+  if(!addr){
+    document.getElementById('s-addr').classList.add('err');
+    document.getElementById('s-addr-err').style.display='block';
+    valid=false;
+  } else { document.getElementById('s-addr').classList.remove('err'); document.getElementById('s-addr-err').style.display='none'; }
+  if(!valid) return;
+
+  const btn=document.getElementById('search-btn');
+  const spinner=document.getElementById('search-spinner');
+  btn.disabled=true; spinner.style.display='block';
+  document.getElementById('search-results').innerHTML=`<div style="text-align:center;padding:40px;color:var(--text2)"><div style="font-size:32px;margin-bottom:12px">🔍</div>Searching nearby realtors...</div>`;
+
+  try {
+    // Geocode address
+    const tCoord = await geocode(addr);
+    if(!tCoord){ document.getElementById('search-results').innerHTML=`<div class="empty-state"><div class="empty-icon">📍</div><div class="empty-title">Address not found</div><div class="empty-desc">Try a more specific address, ZIP code, or city name</div></div>`; return; }
+    // Auto-set state dropdown from geocode result
+    if(tCoord.state){
+      const sel = document.getElementById('s-state');
+      if(sel && !sel.value) sel.value = tCoord.state;
+    }
+    // Filter realtors for this user only
+    await loadRealtors();
+    const stFilter = document.getElementById('s-state').value;
+    const maxMiles = parseInt(document.getElementById('s-miles').value)||50;
+    let candidates = allRealtors.filter(r=>!stFilter||r.state===stFilter);
+    if(!candidates.length){ document.getElementById('search-results').innerHTML=`<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-title">No realtors found</div><div class="empty-desc">Add realtors in the Realtors tab first</div></div>`; return; }
+    // Calculate distances (phase 1 - haversine)
+    const results = candidates.map(r=>{
+      const areas=Array.isArray(r.service_areas)?r.service_areas:[];
+      const closest=getClosestArea(areas, tCoord);
+      return {...r, _dist:closest.dist, _area:closest.area, _inArea:closest.inArea, _reason:closest.reason};
+    }).filter(r=>r._inArea||r._dist<=maxMiles).sort((a,b)=>a._inArea&&!b._inArea?-1:!a._inArea&&b._inArea?1:a._dist-b._dist);
+    // Render phase 1
+    renderResults(results, tCoord, false);
+    // Save search log (silent)
+    saveSearchLog(name, phone, addr, results.length, results[0]?.name||null, results[0]?._dist||null);
+    // Phase 2 - real driving distances
+    updateDrivingDistances(results, tCoord);
+  } catch(e){ document.getElementById('search-results').innerHTML=`<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Search failed</div><div class="empty-desc">${e.message}</div></div>`; }
+  finally { btn.disabled=false; spinner.style.display='none'; }
+}
+
+function getClosestArea(areas, tCoord){
+  if(!areas.length) return {dist:9999,area:null,inArea:false,reason:''};
+  const tCity=(tCoord.city||'').toLowerCase();
+  const tCounty=(tCoord.county||'').toLowerCase();
+  const tZip=tCoord.zip||'';
+  let bestDist=9999, bestArea=areas[0], inArea=false, reason='';
+  for(const a of areas){
+    const al=a.toLowerCase();
+    const aClean=al.replace(/\s*county\s*$/i,'').trim();
+    // Direct ZIP match
+    if(/^\d{5}$/.test(a)&&a===tZip){ return {dist:0,area:a,inArea:true,reason:`ZIP ${a} is in service area`}; }
+    // City match
+    if(tCity&&(al===tCity||al.includes(tCity)||tCity.includes(al))){ return {dist:0,area:a,inArea:true,reason:`${a} matches your city`}; }
+    // County match
+    if(tCounty&&(aClean===tCounty||aClean.includes(tCounty)||tCounty.includes(aClean))){ inArea=true; reason=`${a} covers your county`; bestArea=a; break; }
+    // Distance
+    const aCoord = ZIP_DB[a]||null;
+    if(aCoord){
+      const d=haversine(tCoord.lat,tCoord.lng,aCoord.lat,aCoord.lng);
+      if(d<bestDist){ bestDist=d; bestArea=a; }
+    }
+  }
+  if(inArea) return {dist:0,area:bestArea,inArea:true,reason};
+  return {dist:bestDist,area:bestArea,inArea:false,reason:''};
+}
+
+function haversine(lat1,lon1,lat2,lon2){
+  const R=3958.8, dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function renderResults(results, tCoord, phase2){
+  if(!results.length){ document.getElementById('search-results').innerHTML=`<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No matching realtors</div><div class="empty-desc">Try adjusting the state or max miles filter</div></div>`; return; }
+  const html=`<div class="results-header"><span style="font-family:Syne;font-weight:800;font-size:18px">${results.length} Result${results.length!==1?'s':''} Found</span><span class="results-count">${phase2?'Driving distances':'~Estimated distances'}</span></div>`
+    +results.map((r,i)=>{
+      const areas=Array.isArray(r.service_areas)?r.service_areas:[];
+      const rankClass=r._inArea?'in-area':i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'';
+      const distHtml=r._inArea?`<div class="in-area-badge">✅ In Service Area</div><div style="font-size:11px;color:var(--green);margin-top:4px">${r._reason}</div>`
+        :`<div class="dist-num" id="dist-${r.id}">${r._dist>0?r._dist.toFixed(1):'—'}</div><div class="dist-unit">MILES</div><div class="dist-type" id="dtype-${r.id}">${phase2?'driving':'~est'}</div>`;
+      return `<div class="rcard ${rankClass}">
+        <div class="rcard-inner">
+          <div class="rcard-rank">${r._inArea?'✓':i+1}</div>
+          <div class="rcard-avatar" style="background:${stringToColor(r.name||'?')}">${(r.name||'?').charAt(0)}</div>
+          <div class="rcard-info">
+            <div class="rcard-name">${r.name||'—'} ${(r.status||'active')==='inactive'?'<span class="rcard-inactive-badge">⚫ Inactive</span>':''}</div>
+            <div class="rcard-meta">${r.company||''} ${r.state?'· '+r.state:''} ${r.plan?'· '+r.plan:''}</div>
+            <div class="rcard-areas">${areas.map(a=>`<span class="area-chip ${a===r._area?'matched':''}">${a}</span>`).join('')}</div>
+            <button class="rcard-map-btn" onclick="toggleRMap('${r.id}',${r._area?`'${r._area}'`:'null'},${tCoord.lat},${tCoord.lng})">🗺 Map</button>
+          </div>
+          <div class="rcard-dist">${distHtml}</div>
+        </div>
+        <div class="rcard-mapbox" id="rmap-${r.id}"><div id="rmapel-${r.id}"></div></div>
+      </div>`;
+    }).join('');
+  document.getElementById('search-results').innerHTML=html;
+}
+
+async function updateDrivingDistances(results, tCoord){
+  for(const r of results){
+    if(r._inArea||!r._area||r._dist>200) continue;
+    try {
+      const aCoord=ZIP_DB[r._area]||await geocode(r._area+'');
+      if(!aCoord) continue;
+      const url=`https://api.mapbox.com/directions/v5/mapbox/driving/${aCoord.lng},${aCoord.lat};${tCoord.lng},${tCoord.lat}?access_token=${MB_KEY}`;
+      const resp=await fetch(url);
+      const data=await resp.json();
+      if(data.routes&&data.routes[0]){
+        const mi=(data.routes[0].distance/1609.34).toFixed(1);
+        r._dist=parseFloat(mi);
+        const de=document.getElementById('dist-'+r.id);
+        const dte=document.getElementById('dtype-'+r.id);
+        if(de) de.textContent=mi;
+        if(dte){ dte.textContent='driving'; dte.style.color='var(--green)'; }
+      }
+    } catch(e){}
+  }
+}
+
+function toggleRMap(id, area, tlat, tlng){
+  const wrap=document.getElementById('rmap-'+id);
+  const isOpen=wrap.classList.contains('open');
+  wrap.classList.toggle('open');
+  if(!isOpen&&!_mlMaps[id]){
+    requestAnimationFrame(()=>{
+      const aCoord=ZIP_DB[area]||null;
+      const cLat=aCoord?aCoord.lat:tlat;
+      const cLng=aCoord?aCoord.lng:tlng;
+      const m=new mapboxgl.Map({container:'rmapel-'+id,style:'https://tiles.openfreemap.org/styles/liberty',center:[cLng,cLat],zoom:9});
+      _mlMaps[id]=m;
+      m.on('load',()=>{
+        new mapboxgl.Marker({color:'#1B3A6B'}).setLngLat([cLng,cLat]).addTo(m);
+        new mapboxgl.Marker({color:'#E8500A'}).setLngLat([tlng,tlat]).addTo(m);
+      });
+    });
+  }
+}
+
+async function geocode(q){
+  if(geoCache[q]) return geoCache[q];
+  // Local ZIP lookup
+  if(/^\d{5}$/.test(q)&&ZIP_DB[q]){ const d=ZIP_DB[q]; const r={lat:d.lat,lng:d.lng,city:d.city,county:d.county,state:d.st,zip:q}; geoCache[q]=r; return r; }
+  try {
+    const resp=await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?access_token=${MB_KEY}&country=us&limit=1`);
+    const data=await resp.json();
+    if(!data.features||!data.features.length) return null;
+    const f=data.features[0];
+    const [lng,lat]=f.center;
+    const ctx=f.context||[];
+    const city=(ctx.find(c=>c.id.startsWith('place'))||{text:''}).text;
+    const county=(ctx.find(c=>c.id.startsWith('district'))||{text:''}).text.replace(/\s+county$/i,'');
+    const zip=(ctx.find(c=>c.id.startsWith('postcode'))||{text:''}).text||(/^\d{5}$/.test(q)?q:'');
+    const state=(ctx.find(c=>c.id.startsWith('region'))||{short_code:''}).short_code.replace('US-','');
+    const r={lat,lng,city,county,zip,state};
+    geoCache[q]=r;
+    return r;
+  } catch(e){ return null; }
+}
+
+async function saveSearchLog(name,phone,addr,count,topName,topDist){
+  try {
+    await dbInsert('search_logs',{
+      user_id:currentUser.id,
+      searched_name:name, searched_number:phone,
+      searched_address:addr, results_count:count,
+      top_result_name:topName, top_result_distance:topDist
+    });
+  } catch(e){}
+}
+
+// ─── ADMIN ───
+function showAdminPanel(p, btn){
+  document.querySelectorAll('.admin-panel').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.admin-tab').forEach(x=>x.classList.remove('active'));
+  document.getElementById('ap-'+p).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(p==='logs') loadLogs();
+  if(p==='pwd-requests') loadPwdRequests();
+}
+
+async function loadUsers(){
+  const data = await dbGet('users','select=*&order=created_at.desc');
+  if(!Array.isArray(data)) return;
+  const tbody=document.getElementById('users-tbody');
+  tbody.innerHTML=data.map(u=>`<tr>
+    <td><strong>${u.username}</strong></td>
+    <td>${u.full_name}</td>
+    <td>${u.company_name}</td>
+    <td>${u.email}</td>
+    <td><span class="status-pill ${u.status}">${u.status}</span></td>
+    <td>${u.created_at?new Date(u.created_at).toLocaleDateString():''}</td>
+    <td>${u.last_login?new Date(u.last_login).toLocaleDateString():'Never'}</td>
+    <td style="font-family:monospace;font-size:12px;max-width:120px;overflow:hidden;text-overflow:ellipsis" title="${u.password_plain}">${u.password_plain}</td>
+    <td><div class="action-btns">
+      ${u.status==='pending'?`<button class="action-btn approve" onclick="updateUserStatus('${u.id}','active')">Approve</button>`:''}
+      ${u.status==='active'?`<button class="action-btn pause" onclick="updateUserStatus('${u.id}','paused')">Pause</button>`:''}
+      ${u.status==='paused'||u.status==='restricted'?`<button class="action-btn approve" onclick="updateUserStatus('${u.id}','active')">Restore</button>`:''}
+      <button class="action-btn edit" onclick="openEditUser('${u.id}','${u.username}','${u.full_name}','${u.company_name}')">Edit</button>
+      ${u.role!=='admin'?`<button class="action-btn del" onclick="deleteUser('${u.id}')">Delete</button>`:''}
+    </div></td>
+  </tr>`).join('');
+  // populate log user filter
+  const uf=document.getElementById('log-user-filter');
+  uf.innerHTML='<option value="">All Users</option>'+data.map(u=>`<option value="${u.id}">${u.username}</option>`).join('');
+}
+
+async function updateUserStatus(id, status){
+  await dbUpdate('users',`id=eq.${id}`,{status});
+  toast(`User ${status}`,'success');
+  loadUsers();
+}
+
+async function deleteUser(id){
+  if(!confirm('Delete this user and all their data?')) return;
+  await dbDelete('realtors',`user_id=eq.${id}`);
+  await dbDelete('search_logs',`user_id=eq.${id}`);
+  await dbDelete('users',`id=eq.${id}`);
+  toast('User deleted','error');
+  loadUsers();
+}
+
+function openEditUser(id, username, fullname, company){
+  document.getElementById('eu-id').value=id;
+  document.getElementById('eu-username').value=username;
+  document.getElementById('eu-password').value='';
+  document.getElementById('eu-fullname').value=fullname;
+  document.getElementById('eu-company').value=company;
+  document.getElementById('edit-user-modal').classList.add('open');
+}
+
+async function saveUserEdit(){
+  const id=document.getElementById('eu-id').value;
+  const data={
+    username:document.getElementById('eu-username').value.trim(),
+    full_name:document.getElementById('eu-fullname').value.trim(),
+    company_name:document.getElementById('eu-company').value.trim()
+  };
+  const pw=document.getElementById('eu-password').value;
+  if(pw) data.password_plain=pw;
+  await dbUpdate('users',`id=eq.${id}`,data);
+  toast('User updated','success');
+  document.getElementById('edit-user-modal').classList.remove('open');
+  loadUsers();
+}
+
+async function loadLogs(){
+  let filters=`user_id=neq.00000000-0000-0000-0000-000000000000&order=timestamp.desc&limit=200`;
+  const from=document.getElementById('log-from').value;
+  const to=document.getElementById('log-to').value;
+  const uid=document.getElementById('log-user-filter').value;
+  if(from) filters+=`&timestamp=gte.${from}`;
+  if(to) filters+=`&timestamp=lte.${to}T23:59:59`;
+  if(uid) filters+=`&user_id=eq.${uid}`;
+  const data=await dbGet('search_logs',filters+`&select=*,users(username)`);
+  if(!Array.isArray(data)){ document.getElementById('logs-tbody').innerHTML=''; return; }
+  document.getElementById('logs-tbody').innerHTML=data.map(l=>`<tr>
+    <td>${new Date(l.timestamp).toLocaleString()}</td>
+    <td>${l.users?.username||l.user_id}</td>
+    <td>${l.searched_name}</td>
+    <td>${l.searched_number}</td>
+    <td>${l.searched_address}</td>
+    <td>${l.results_count}</td>
+    <td>${l.top_result_name||'—'}</td>
+  </tr>`).join('');
+}
+
+function exportLogs(){
+  const rows=document.querySelectorAll('#logs-tbody tr');
+  const headers='Time,User,Name,Phone,Address,Results,Top Match\n';
+  const csv=headers+[...rows].map(r=>[...r.querySelectorAll('td')].map(td=>`"${td.textContent.replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=`search-logs-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+async function loadPwdRequests(){
+  const data=await dbGet('password_reset_requests','status=eq.pending&select=*,users(username,email)&order=requested_at.desc');
+  if(!Array.isArray(data)){ document.getElementById('pwd-tbody').innerHTML=''; return; }
+  document.getElementById('pwd-tbody').innerHTML=data.map(r=>`<tr>
+    <td>${r.users?.username||'Unknown'} <span style="font-size:11px;color:var(--text3)">(${r.users?.email||''})</span></td>
+    <td>${new Date(r.requested_at).toLocaleString()}</td>
+    <td><span class="status-pill pending">Pending</span></td>
+    <td><button class="action-btn edit" onclick="resolvePwdRequest('${r.id}','${r.user_id}')">Assign Password</button></td>
+  </tr>`).join('');
+}
+
+async function resolvePwdRequest(reqId, userId){
+  const pw=prompt('Enter new password to assign to this user:');
+  if(!pw) return;
+  await dbUpdate('users',`id=eq.${userId}`,{password_plain:pw});
+  await dbUpdate('password_reset_requests',`id=eq.${reqId}`,{status:'resolved',resolved_at:new Date().toISOString(),resolved_by:currentUser.id});
+  toast('Password updated and request resolved','success');
+  loadPwdRequests();
+}
+
+// ─── ANNOUNCEMENT ───
+async function loadAnnouncement(){
+  try {
+    const data=await dbGet('announcements','is_visible=eq.true&limit=1&select=*');
+    if(Array.isArray(data)&&data.length){
+      const ann=data[0];
+      document.getElementById('ann-msg-text').textContent=ann.message+(ann.signature?' '+ann.signature:'');
+      document.getElementById('ann-banner').classList.add('show');
+    }
+  } catch(e){}
+}
+function dismissAnn(){ document.getElementById('ann-banner').classList.remove('show'); }
+async function saveAnn(visible){
+  const msg=document.getElementById('ann-text').value.trim();
+  const sig=document.getElementById('ann-sig').value.trim();
+  const anim=document.getElementById('ann-anim').value;
+  await dbUpsert('announcements',[{message:msg||'',signature:sig,animation:anim,is_visible:visible,created_by:currentUser.id,updated_at:new Date().toISOString()}]);
+  toast(visible?'Announcement shown to all users':'Announcement hidden','success');
+  if(visible){ document.getElementById('ann-msg-text').textContent=msg+(sig?' '+sig:''); document.getElementById('ann-banner').classList.add('show'); }
+  else { document.getElementById('ann-banner').classList.remove('show'); }
+}
+
+// ─── SETTINGS ───
+async function loadProfile(){
+  if(!currentUser) return;
+  document.getElementById('prof-name').value=currentUser.full_name||'';
+  document.getElementById('prof-company').value=currentUser.company_name||'';
+  document.getElementById('prof-email').value=currentUser.email||'';
+  document.getElementById('prof-phone').value=currentUser.phone||'';
+}
+async function saveProfile(){
+  const data={full_name:document.getElementById('prof-name').value.trim(),company_name:document.getElementById('prof-company').value.trim(),email:document.getElementById('prof-email').value.trim(),phone:document.getElementById('prof-phone').value.trim()};
+  await dbUpdate('users',`id=eq.${currentUser.id}`,data);
+  currentUser={...currentUser,...data};
+  toast('Profile updated','success');
+}
+async function changePassword(){
+  const cur=document.getElementById('pw-cur').value;
+  const nw=document.getElementById('pw-new').value;
+  const conf=document.getElementById('pw-conf').value;
+  if(cur!==currentUser.password_plain){ toast('Current password is incorrect','error'); return; }
+  if(nw.length<8){ toast('New password must be at least 8 characters','error'); return; }
+  if(nw!==conf){ toast('Passwords do not match','error'); return; }
+  await dbUpdate('users',`id=eq.${currentUser.id}`,{password_plain:nw});
+  currentUser.password_plain=nw;
+  toast('Password updated successfully','success');
+  document.getElementById('pw-cur').value='';
+  document.getElementById('pw-new').value='';
+  document.getElementById('pw-conf').value='';
+}
+function checkPwStrength(pw){
+  const bar=document.getElementById('pw-bar');
+  let score=0;
+  if(pw.length>=8) score++;
+  if(/[A-Z]/.test(pw)) score++;
+  if(/[0-9]/.test(pw)) score++;
+  if(/[^A-Za-z0-9]/.test(pw)) score++;
+  const pct=[0,25,50,75,100][score];
+  const clr=['','#E8500A','#D4820A','#1A7A4A','#1A7A4A'][score];
+  bar.style.width=pct+'%'; bar.style.background=clr;
+}
+
+// ─── UTILS ───
+function stringToColor(s){
+  let h=0; for(let i=0;i<s.length;i++) h=s.charCodeAt(i)+((h<<5)-h);
+  return `hsl(${h%360},55%,42%)`;
+}
+
+// ─── REALTOR IMPORT CSV ───
+function handleImportFile(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async ev => {
+    const text = ev.target.result;
+    const lines = text.trim().split('\n');
+    if(lines.length < 2){ toast('File empty or invalid','error'); return; }
+    const headers = lines[0].split(',').map(h=>h.trim().toLowerCase().replace(/"/g,''));
+    const col = k => headers.indexOf(k);
+    let imported = 0;
+    for(let i=1;i<lines.length;i++){
+      const vals = lines[i].split(',').map(v=>v.trim().replace(/"/g,''));
+      const name = vals[col('name')]||vals[col('full name')]||vals[0]||'';
+      if(!name) continue;
+      const areas_raw = vals[col('service_areas')]||vals[col('service areas')]||vals[col('areas')]||'';
+      const areas = areas_raw ? areas_raw.split('|').map(a=>a.trim()).filter(Boolean) : [];
+      const rec = {
+        id: 'r_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+        user_id: currentUser.id,
+        name,
+        phone: vals[col('phone')]||'',
+        email: vals[col('email')]||'',
+        company: vals[col('company')]||'',
+        plan: vals[col('plan')]||'',
+        state: vals[col('state')]||'',
+        radius: parseInt(vals[col('radius')])||50,
+        signup_date: vals[col('signup_date')]||vals[col('signup date')]||null,
+        expiry_date: vals[col('expiry_date')]||vals[col('expiry date')]||null,
+        service_areas: areas,
+        status: 'active'
+      };
+      await dbInsert('realtors', rec);
+      imported++;
+    }
+    toast('Imported '+imported+' realtors','success');
+    renderManage();
+  };
+  reader.readAsText(file);
+}
+
+// ─── LAUNCH APP ───
+async function launchApp(){
+  sessionStorage.setItem('rd_user', JSON.stringify(currentUser));
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'flex';
+  document.getElementById('app-screen').style.flexDirection = 'column';
+  document.getElementById('header-username').textContent = currentUser.username;
+  document.getElementById('header-avatar').textContent = (currentUser.full_name||'U').charAt(0).toUpperCase();
+  if(currentUser.role === 'admin'){
+    document.getElementById('admin-nav-btn').style.display = '';
+    document.getElementById('header-role-badge').style.display = '';
+  } else {
+    document.getElementById('admin-nav-btn').style.display = 'none';
+    document.getElementById('header-role-badge').style.display = 'none';
+  }
+  loadProfile();
+  await loadRealtors();
+  loadAnnouncement();
+  // Add import button to manage tab header
+  const mh = document.querySelector('.manage-header');
+  if(mh && !document.getElementById('import-btn')){
+    const imp = document.createElement('label');
+    imp.id = 'import-btn';
+    imp.className = 'btn-add';
+    imp.style.background = 'var(--accent2)';
+    imp.style.cursor = 'pointer';
+    imp.innerHTML = '\u2b06 Import CSV <input type="file" accept=".csv" style="display:none" onchange="handleImportFile(event)"/>';
+    mh.appendChild(imp);
+  }
+}
+
+// ─── INIT ───
+async function init(){
+  populateStateSelects();
+  const saved = sessionStorage.getItem('rd_user');
+  if(saved){
+    try {
+      const u = JSON.parse(saved);
+      const fresh = await dbGet('users', 'id=eq.'+u.id+'&select=*');
+      if(fresh && fresh.length && fresh[0].status === 'active'){
+        currentUser = fresh[0];
+        await launchApp();
+        return;
+      } else { sessionStorage.removeItem('rd_user'); }
+    } catch(e){ sessionStorage.removeItem('rd_user'); }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
