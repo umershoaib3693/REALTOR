@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://routedesk.dpdns.org/sitemap.xml
