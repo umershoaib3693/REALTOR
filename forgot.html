@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reset Password — RouteDesk</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%23E8500A'/><circle cx='32' cy='26' r='10' fill='white'/><circle cx='32' cy='26' r='5' fill='%23E8500A'/><path d='M32 36 C22 48 16 54 32 58 C48 54 42 48 32 36Z' fill='white'/></svg>"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#F5F4F0;--surface:#FFFFFF;--border:#E2DDD5;--accent:#E8500A;--accent2:#1B3A6B;--text:#1A1A1A;--text2:#5A5650;--green:#1A7A4A;--red:#C0392B;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:stretch;}
+.auth-left{width:48%;background:var(--accent2);padding:60px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;}
+.auth-left::before{content:'';position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(232,80,10,.3) 0%,transparent 70%);top:-100px;right:-100px;border-radius:50%;}
+.auth-left::after{content:'';position:absolute;width:300px;height:300px;background:radial-gradient(circle,rgba(232,80,10,.2) 0%,transparent 70%);bottom:-50px;left:-50px;border-radius:50%;}
+.auth-brand{position:relative;z-index:1;}
+.auth-brand-logo{display:flex;align-items:center;gap:12px;margin-bottom:48px;}
+.auth-brand-icon{width:48px;height:48px;background:var(--accent);border-radius:12px;display:flex;align-items:center;justify-content:center;}
+.auth-brand-name{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:white;letter-spacing:-0.5px;}
+.auth-brand-name span{color:var(--accent);}
+.auth-tagline{font-size:38px;font-weight:700;color:white;line-height:1.2;margin-bottom:24px;font-family:'Syne',sans-serif;}
+.auth-tagline span{color:var(--accent);}
+.auth-desc{color:rgba(255,255,255,.6);font-size:15px;line-height:1.7;max-width:340px;}
+.auth-note{position:relative;z-index:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:20px;color:rgba(255,255,255,0.75);font-size:13px;line-height:1.6;}
+.auth-right{flex:1;display:flex;align-items:center;justify-content:center;padding:60px 80px;background:var(--bg);}
+.auth-form-wrap{width:100%;max-width:380px;}
+.auth-back{display:inline-flex;align-items:center;gap:6px;color:var(--text2);font-size:0.85rem;text-decoration:none;margin-bottom:32px;transition:color .15s;}
+.auth-back:hover{color:var(--accent);}
+.auth-title{font-size:28px;font-weight:800;margin-bottom:6px;font-family:'Syne',sans-serif;}
+.auth-subtitle{color:var(--text2);font-size:14px;margin-bottom:32px;}
+.form-group{margin-bottom:18px;}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;}
+.form-input{width:100%;padding:12px 16px;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);transition:border-color .2s;outline:none;}
+.form-input:focus{border-color:var(--accent);}
+.btn-primary{width:100%;padding:14px;background:var(--accent);color:white;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:background .2s;}
+.btn-primary:hover{background:#D04008;}
+.auth-switch{text-align:center;margin-top:24px;font-size:13px;color:var(--text2);}
+.auth-switch a{color:var(--accent);font-weight:600;text-decoration:none;}
+.auth-switch a:hover{text-decoration:underline;}
+.auth-msg{padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none;}
+.auth-msg.error{background:#FEF2F2;color:var(--red);border:1px solid #FCA5A5;display:block;}
+.auth-msg.success{background:#F0FDF4;color:var(--green);border:1px solid #86EFAC;display:block;}
+@media(max-width:768px){body{flex-direction:column;}.auth-left{width:100%;padding:40px 24px;min-height:auto;}.auth-tagline{font-size:26px;}.auth-right{padding:40px 24px;}}
+</style>
+</head>
+<body>
+<div class="auth-left">
+  <div class="auth-brand">
+        <div class="auth-brand-logo">
+      <div style="background:#ffffff;border-radius:16px;padding:12px 20px;display:inline-block;margin-bottom:4px;box-shadow:0 4px 20px rgba(0,0,0,0.15);"><img src="logo.jpeg" alt="RouteDesk" style="height:72px;width:auto;object-fit:contain;display:block;"/></div>
+    </div>
+    <div class="auth-tagline">Password<br/><span>Reset</span></div>
+    <div class="auth-desc">Submit a reset request and your admin will assign you a new password shortly.</div>
+  </div>
+  <div class="auth-note">
+    💡 <strong>How it works:</strong> After submitting, your admin will see the request in their panel and assign you a new password. You'll then be able to log in with it.
+  </div>
+</div>
+<div class="auth-right">
+  <div class="auth-form-wrap">
+    <a class="auth-back" href="login.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Back to Sign In
+    </a>
+    <div class="auth-title">Password Reset</div>
+    <div class="auth-subtitle">Submit a request and admin will assign a new password</div>
+    <div class="auth-msg" id="forgot-msg"></div>
+    <div class="form-group">
+      <label class="form-label">Email *</label>
+      <input class="form-input" id="fp-email" type="email" placeholder="Your registered email"/>
+    </div>
+    <button class="btn-primary" onclick="doForgot()">Submit Reset Request</button>
+    <div class="auth-switch"><a href="login.html">← Back to Sign In</a></div>
+  </div>
+</div>
+<script>
+const SB='https://kredowrppanxeylwjxye.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyZWRvd3JwcGFueGV5bHdqeHllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMzg5NzAsImV4cCI6MjA5NTkxNDk3MH0.-ThTmG0KvY9o5PltgyNuyAsUbOkrvZifqFB10ZNoCxg';
+const HEADERS={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+function setMsg(id,msg,type){const el=document.getElementById(id);el.textContent=msg;el.className='auth-msg '+type;}
+async function dbGet(table,filters=''){const r=await fetch(`${SB}/rest/v1/${table}?${filters}`,{headers:HEADERS});return r.json();}
+async function dbInsert(table,data){const r=await fetch(`${SB}/rest/v1/${table}`,{method:'POST',headers:{...HEADERS,'Prefer':'return=representation'},body:JSON.stringify(data)});return r.json();}
+async function doForgot(){
+  const email=document.getElementById('fp-email').value.trim();
+  if(!email){setMsg('forgot-msg','Please enter your email','error');return;}
+  try{
+    const data=await dbGet('users',`email=eq.${encodeURIComponent(email)}&select=id`);
+    if(!data||!data.length){setMsg('forgot-msg','No account found with that email','error');return;}
+    await dbInsert('password_reset_requests',{user_id:data[0].id,status:'pending'});
+    setMsg('forgot-msg','✅ Reset request submitted. Admin will assign you a new password.','success');
+  }catch(e){setMsg('forgot-msg','Error submitting request. Try again.','error');}
+}
+</script>
+</body>
+</html>
