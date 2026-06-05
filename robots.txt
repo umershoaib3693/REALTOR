@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /login.html
+Allow: /signup.html
+Allow: /forgot.html
+Disallow: /app.html
+
+Sitemap: https://routedesk.dpdns.org/sitemap.xml
