@@ -16,6 +16,3 @@ Disallow: /*.json$
 
 # Sitemap location
 Sitemap: https://routedesk.dpdns.org/sitemap.xml
-
-# Crawl delay (be nice to server)
-Crawl-delay: 10
